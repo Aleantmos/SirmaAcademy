@@ -1,0 +1,13 @@
+[ {
+  "cartId" : 1,
+  "userId" : 1,
+  "budget" : 0.0,
+  "itemsAdded" : [ {
+    "category" : "CLOTHES",
+    "id" : 2,
+    "name" : "Jeans",
+    "price" : 60.0,
+    "cost" : 30.0,
+    "quantity" : 2
+  } ]
+} ]

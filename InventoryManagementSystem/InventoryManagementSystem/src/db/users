@@ -1,7 +1,0 @@
-[ {
-  "id" : 1,
-  "username" : "Alex",
-  "password" : "123123",
-  "role" : [ "USER" ],
-  "cartId" : 1
-} ]

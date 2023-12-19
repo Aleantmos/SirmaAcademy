@@ -1,4 +1,4 @@
-package com.exam.pairidentifier.init;
+package com.exam.pairidentifier.init.db;
 
 import org.springframework.context.annotation.Configuration;
 

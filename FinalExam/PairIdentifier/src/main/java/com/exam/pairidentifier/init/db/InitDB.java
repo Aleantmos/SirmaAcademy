@@ -1,4 +1,4 @@
-package com.exam.pairidentifier.init;
+package com.exam.pairidentifier.init.db;
 
 import com.exam.pairidentifier.io.CustomReader;
 import com.exam.pairidentifier.io.impl.SqlScriptReader;
@@ -13,11 +13,11 @@ import java.util.List;
 import static com.exam.pairidentifier.util.MyConstants.*;
 
 @Component
-public class InitDB implements CommandLineRunner {
+public class InitDB {
 
     //todo -> hide credentials
-    @Override
-    public void run(String... args) {
+
+    public void createDatabase(String... args) {
 
         if (checkIfDatabaseExists()) {
             initDatabase();

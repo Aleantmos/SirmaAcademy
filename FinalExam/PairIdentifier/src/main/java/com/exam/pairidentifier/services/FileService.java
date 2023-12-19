@@ -9,8 +9,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
-import java.sql.Date;
 import java.util.*;
+import java.util.Date;
+
 
 @Service
 public class FileService {
@@ -18,13 +19,15 @@ public class FileService {
     private final MappingRepository mappingRepository;
     private final EmployeeService employeeService;
     private final ProjectService projectService;
+    private final DateFormatService dateFormatService;
 
 
     @Autowired
-    public FileService(MappingRepository mappingRepository, EmployeeService employeeService, ProjectService projectService) {
+    public FileService(MappingRepository mappingRepository, EmployeeService employeeService, ProjectService projectService, DateFormatService dateFormatService) {
         this.mappingRepository = mappingRepository;
         this.employeeService = employeeService;
         this.projectService = projectService;
+        this.dateFormatService = dateFormatService;
     }
 
     public void processData() {
@@ -43,11 +46,12 @@ public class FileService {
 
             Long employeeId = Long.parseLong(tokens[0]);
             Long projectId = Long.parseLong(tokens[1]);
-            Date startDate = getDate(tokens[2]);
+
+            Date startDate = dateFormatService.parseDate(tokens[2]);
             Date endDate = null;
 
             if (tokens[3] != null) {
-                endDate = getDate(tokens[3]);
+                endDate = dateFormatService.parseDate(tokens[3]);
             }
 
             if (!employeesIds.contains(employeeId)) {
@@ -63,8 +67,6 @@ public class FileService {
             mappingRepository.insertIntoMappingTable(employeeId, projectId, startDate, endDate);
         }
 
-
-
     }
 
     private static List<? extends Serializable> getRoughFileData() {
@@ -72,10 +74,6 @@ public class FileService {
         return customReader.read(MyConstants.ROUGH_FILE_PATH);
     }
 
-    private Date getDate(String token) {
-        //todo implement all date formats
-        return Date.valueOf(token);
-    }
 
 
     public void saveRoughFile(MultipartFile file) {

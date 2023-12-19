@@ -1,13 +1,13 @@
 create table employees (
-    id serial primary key not null unique
+    id int primary key not null unique
 );
 
 create table projects (
-    id serial PRIMARY KEY
+    id int primary key not null unique
 );
 
 create table employee_project (
-    id serial primary key,
+    id serial primary key not null unique,
     employee_id int,
     project_id int,
     start_date DATE,
@@ -19,3 +19,7 @@ create table employee_project (
 );
 
 
+create table date_formats (
+    id serial primary key not null unique,
+    format varchar(225) not null
+);

@@ -15,7 +15,7 @@ public class SqlScriptReader implements CustomReader {
         StringBuilder sqlScript = new StringBuilder();
 
         try {
-            BufferedReader bufferedReader = ReaderUtils.getBufferedReader(file);
+            BufferedReader bufferedReader = ReaderUtils.getBufferedFileReader(file);
 
             String line = bufferedReader.readLine();
             while (line != null) {

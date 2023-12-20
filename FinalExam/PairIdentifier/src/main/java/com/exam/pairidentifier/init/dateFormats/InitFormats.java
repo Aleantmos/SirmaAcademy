@@ -20,7 +20,7 @@ public class InitFormats {
     }
 
 
-    public void populateFormatDB(String... args) throws Exception {
+    public void populateFormatDB() throws Exception {
         if (checkFormatsCount()) {
             formatService.saveFormats(formats);
         }

@@ -11,18 +11,15 @@ public class InitMain implements CommandLineRunner {
     private final InitDB initDB;
     private final InitFormats initFormats;
     //todo only for testing delete afterward!!!
-    private final FileService fileService;
 
-    public InitMain(InitDB initDB, InitFormats initFormats, FileService fileService) {
+    public InitMain(InitDB initDB, InitFormats initFormats) {
         this.initDB = initDB;
         this.initFormats = initFormats;
-        this.fileService = fileService;
     }
 
     @Override
     public void run(String... args) throws Exception {
         initDB.createDatabase();
         initFormats.populateFormatDB();
-        fileService.processData();
     }
 }

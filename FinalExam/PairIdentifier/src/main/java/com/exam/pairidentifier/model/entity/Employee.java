@@ -3,8 +3,6 @@ package com.exam.pairidentifier.model.entity;
 
 import jakarta.persistence.*;
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -13,8 +11,8 @@ public class Employee {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-//    @ManyToMany(mappedBy = "employees")
-//    private List<Project> projects;
+  //  @ManyToMany(mappedBy = "employees")
+  //  private List<Project> projects;
 
     public Employee() {
     }
@@ -32,12 +30,11 @@ public class Employee {
         this.id = id;
     }
 
-//    public List<Project> getProject() {
-//        return projects;
-//    }
-
-//    public void setProject(List<Project> projects) {
-//        this.projects = projects;
-//    }
+   //public List<Project> getProjects() {
+   //    return projects;
+   //}
+   //   public void setProject(List<Project> projects) {
+   //    this.projects = projects;
+   //}
 
 }

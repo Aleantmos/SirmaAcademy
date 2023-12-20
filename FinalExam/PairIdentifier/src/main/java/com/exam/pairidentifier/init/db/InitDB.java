@@ -17,7 +17,7 @@ public class InitDB {
 
     //todo -> hide credentials
 
-    public void createDatabase(String... args) {
+    public void createDatabase() {
 
         if (checkIfDatabaseExists()) {
             initDatabase();

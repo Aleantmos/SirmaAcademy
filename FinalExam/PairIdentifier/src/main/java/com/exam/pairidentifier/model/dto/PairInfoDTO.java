@@ -1,19 +1,19 @@
 package com.exam.pairidentifier.model.dto;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class PairInfoDTO {
     private Long employeeIdOne;
     private Long employeeIdTwo;
     private Long totalDaysCommon = 0l;
-    private List<Long> commonProjects;
+    private HashMap<Long, Long> commonProjects;
 
     public PairInfoDTO(Long employeeIdOne, Long employeeIdTwo) {
         this.employeeIdOne = employeeIdOne;
         this.employeeIdTwo = employeeIdTwo;
         //this.totalDaysCommon = 0L;
-        this.commonProjects = new ArrayList<>();
+        this.commonProjects = new HashMap<>();
     }
 
     public Long getEmployeeIdOne() {
@@ -40,11 +40,11 @@ public class PairInfoDTO {
         this.totalDaysCommon += totalDaysCommon;
     }
 
-    public List<Long> getCommonProjects() {
+    public HashMap<Long, Long> getCommonProjects() {
         return commonProjects;
     }
 
-    public void setCommonProjects(List<Long> commonProjects) {
+    public void setCommonProjects(HashMap<Long, Long> commonProjects) {
         this.commonProjects = commonProjects;
     }
 }

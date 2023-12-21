@@ -1,7 +1,7 @@
-package com.exam.pairidentifier.io.impl;
+package com.exam.pairidentifier.io.impl.sql;
 
 import com.exam.pairidentifier.io.CustomReader;
-import com.exam.pairidentifier.util.ReaderUtils;
+import com.exam.pairidentifier.util.IOUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -15,7 +15,7 @@ public class SqlScriptReader implements CustomReader {
         StringBuilder sqlScript = new StringBuilder();
 
         try {
-            BufferedReader bufferedReader = ReaderUtils.getBufferedFileReader(file);
+            BufferedReader bufferedReader = IOUtils.getBufferedFileReader(file);
 
             String line = bufferedReader.readLine();
             while (line != null) {

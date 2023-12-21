@@ -1,6 +1,6 @@
 package com.exam.pairidentifier.services;
 
-import com.exam.pairidentifier.exceptions.UnsupportedDateFormatException;
+import com.exam.pairidentifier.exceptions.UniquenessException;
 import com.exam.pairidentifier.repositories.DateFormatRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,9 +43,27 @@ public class DateFormatService {
         return dateFormatRepository.getFormatsCount();
     }
 
-    public void saveFormats(List<String> formats) {
+    public void saveFormats(List<String> formats) throws UniquenessException {
         for (String format : formats) {
-            dateFormatRepository.save(format);
+            saveFormat(format);
         }
+    }
+
+    public void saveFormat(String format) throws UniquenessException {
+        if (checkExistence(format)) {
+            throw new UniquenessException("Format already exists.");
+        }
+        dateFormatRepository.save(format);
+    }
+
+    public Boolean deleteFormat(String format) {
+        int affected = dateFormatRepository.deleteFormat(format);
+        return affected != 0;
+    }
+
+    private boolean checkExistence(String format) {
+        List<String> allFormats = dateFormatRepository.getFormat();
+
+        return allFormats.contains(format);
     }
 }

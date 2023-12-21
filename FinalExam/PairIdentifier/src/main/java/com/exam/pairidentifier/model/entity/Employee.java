@@ -14,6 +14,9 @@ public class Employee {
   //  @ManyToMany(mappedBy = "employees")
   //  private List<Project> projects;
 
+    @Column(name = "employee_id")
+    private Long employeeId;
+
     public Employee() {
     }
 

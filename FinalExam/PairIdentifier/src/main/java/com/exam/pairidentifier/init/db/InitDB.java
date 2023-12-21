@@ -1,9 +1,8 @@
 package com.exam.pairidentifier.init.db;
 
 import com.exam.pairidentifier.io.CustomReader;
-import com.exam.pairidentifier.io.impl.SqlScriptReader;
+import com.exam.pairidentifier.io.impl.sql.SqlScriptReader;
 import com.exam.pairidentifier.util.MyConstants;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;

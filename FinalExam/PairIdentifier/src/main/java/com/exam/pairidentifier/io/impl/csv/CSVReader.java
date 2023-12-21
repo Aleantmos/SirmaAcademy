@@ -1,9 +1,7 @@
-package com.exam.pairidentifier.io.impl;
+package com.exam.pairidentifier.io.impl.csv;
 
 import com.exam.pairidentifier.io.CustomReader;
-import com.exam.pairidentifier.model.entity.Employee;
-import com.exam.pairidentifier.model.entity.Project;
-import com.exam.pairidentifier.util.ReaderUtils;
+import com.exam.pairidentifier.util.IOUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -16,7 +14,7 @@ public class CSVReader implements CustomReader {
     public List<? extends Serializable> read(String fileName) {
         List<String> lines = new LinkedList<>();
 
-        try (BufferedReader reader = ReaderUtils.getBufferedFileReader(fileName);) {
+        try (BufferedReader reader = IOUtils.getBufferedFileReader(fileName);) {
             String line = reader.readLine();
 
             while (line != null) {

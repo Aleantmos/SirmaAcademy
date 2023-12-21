@@ -6,11 +6,13 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+import static com.exam.pairidentifier.util.MyConstants.PERSONAL_DB_CONNECTION;
+
 @Configuration
 public class DatabaseConnectionManager {
 
     private static Connection connection = null;
-    private final static String PERSONAL_DB_CONNECTION = "jdbc:postgresql://localhost:5432/personal";
+
 
     public static Connection getConnection() throws SQLException {
         if (connection == null || connection.isClosed()) {
@@ -19,20 +21,7 @@ public class DatabaseConnectionManager {
         return connection;
     }
 
-//    public static Connection getDBConnection(String dbName) throws SQLException {
-//        if (connection == null || connection.isClosed()) {
-//            initializeConnection(dbName);
-//        }
-//        return connection;
-//    }
-
     private static void initializeConnection() throws SQLException {
-//        String url = BASE_CONNECTION;
-
-//        if (!dbName.isBlank()) {
-//            url += dbName;
-//        }
-
         String user = System.getenv("DATABASE_USERNAME");
         String password = System.getenv("DATABASE_PASSWORD");
 

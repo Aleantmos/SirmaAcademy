@@ -1,7 +1,8 @@
 package com.exam.pairidentifier.services;
 
 import com.exam.pairidentifier.io.CustomReader;
-import com.exam.pairidentifier.io.impl.CSVReader;
+import com.exam.pairidentifier.io.impl.csv.CSVReader;
+import com.exam.pairidentifier.io.impl.csv.CSVWriter;
 import com.exam.pairidentifier.repositories.MappingRepository;
 import com.exam.pairidentifier.util.MyConstants;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,6 @@ public class FileService {
     private final ProjectService projectService;
     private final DateFormatService dateFormatService;
 
-
     @Autowired
     public FileService(MappingRepository mappingRepository, EmployeeService employeeService, ProjectService projectService, DateFormatService dateFormatService) {
         this.mappingRepository = mappingRepository;
@@ -30,16 +30,16 @@ public class FileService {
         this.dateFormatService = dateFormatService;
     }
 
-    public void processData() {
+    public void processNewData() {
+        //todo get some logic from saveObjects back and move data-checking in other method
         saveObjects();
     }
 
     private void saveObjects() {
         List<? extends Serializable> lines = getRoughFileData();
 
-        Set<Long> employeesIds = new HashSet<>();
-        Set<Long> projectsIds = new HashSet<>();
-
+        Set<Long> employeesIds = employeeService.getAllEmployeesIds();
+        Set<Long> projectsIds = projectService.getAllProjectIds();
 
         for (Serializable line : lines) {
             String[] tokens = line.toString().split(",");
@@ -76,7 +76,8 @@ public class FileService {
 
 
 
-    public void saveRoughFile(MultipartFile file) {
-       //todo -> save rough file
+    public void saveRoughFile(MultipartFile fileToSave) {
+        CSVWriter csvWriter = new CSVWriter();
+        csvWriter.write(fileToSave);
     }
 }

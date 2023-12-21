@@ -86,58 +86,50 @@ public class EmployeeService {
                 Date s2 = e2CurrRange.getStartDate();
                 Date e2 = e2CurrRange.getEndDate();
 
-
                 PairInfoDTO pairInfoDTO = pairs.stream()
                         .filter(p -> p.getEmployeeIdOne().equals(e1Id) && p.getEmployeeIdTwo().equals(e2Id))
                         .findFirst()
                         .orElse(new PairInfoDTO(e1Id, e2Id));
 
+                Date latestStart = getLatestStart(s1, s2);
 
-                Date latestStart;
-                if (s1.after(s2)) {
-                    latestStart = s1;
-                } else {
-                    latestStart = s2;
-                }
-
-                Date earliestEnd;
-                if (e1.before(e2)) {
-                    earliestEnd = e1;
-                } else {
-                    earliestEnd = e2;
-                }
+                Date earliestEnd = getEarliestEnd(e1, e2);
 
                 if (!latestStart.after(earliestEnd)) {
                     long diffInMillis = earliestEnd.getTime() - latestStart.getTime();
                     long diffInDays = TimeUnit.DAYS.convert(diffInMillis, TimeUnit.MILLISECONDS);
 
-
                     pairInfoDTO.addAmount(diffInDays);
-                    pairInfoDTO.getCommonProjects().add(e1ProjectId);
+                    pairInfoDTO.getCommonProjects().put(e1ProjectId, diffInDays);
 
                     pairs.add(pairInfoDTO);
                 }
             }
         }
     }
-    private Date getEarliestEnd(Date s1, Date s2) {
-        int result = s1.compareTo(s2);
 
-        if (result > 0) {
-            return s1;
+    private static Date getEarliestEnd(Date e1, Date e2) {
+        Date earliestEnd;
+        if (e1.before(e2)) {
+            earliestEnd = e1;
         } else {
-            return s2;
+            earliestEnd = e2;
         }
+        return earliestEnd;
     }
 
-    private Date getLaterDate(Date e1, Date e2) {
-        int result = e1.compareTo(e2);
-
-        if (result < 0) {
-            return e2;
+    private static Date getLatestStart(Date s1, Date s2) {
+        Date latestStart;
+        if (s1.after(s2)) {
+            latestStart = s1;
         } else {
-            return e1;
+            latestStart = s2;
         }
+        return latestStart;
     }
 
+    public Set<Long> getAllEmployeesIds() {
+        List<Long> allEmployeeIds = employeeRepository.getAllEmployeeIds();
+        return new HashSet<>(allEmployeeIds);
+    }
 }

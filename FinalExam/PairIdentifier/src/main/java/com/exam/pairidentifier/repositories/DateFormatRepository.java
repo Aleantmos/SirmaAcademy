@@ -29,4 +29,14 @@ public class DateFormatRepository {
         String sql = "insert into date_formats (format) values (?)";
         jdbcTemplate.update(sql, format);
     }
+
+    public List<String> getFormat() {
+        String sql = "select format from date_formats";
+        return jdbcTemplate.queryForList(sql, String.class);
+    }
+
+    public int deleteFormat(String format) {
+        String sql = "delete from date_formats where format = (?) ";
+        return jdbcTemplate.update(sql, format);
+    }
 }

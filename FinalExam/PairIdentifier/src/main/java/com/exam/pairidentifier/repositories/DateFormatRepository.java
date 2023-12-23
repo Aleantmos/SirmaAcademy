@@ -18,10 +18,9 @@ public class DateFormatRepository {
         return jdbcTemplate.queryForList(sql, String.class);
     }
 
-    public long getFormatsCount() {
+    public Long getFormatsCount() {
         String sql = "select count(*) from date_formats";
 
-        //todo May produce NullPointer
         return jdbcTemplate.queryForObject(sql, Long.class);
     }
 

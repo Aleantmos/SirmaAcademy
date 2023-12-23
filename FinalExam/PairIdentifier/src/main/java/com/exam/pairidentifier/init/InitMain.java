@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 public class InitMain implements CommandLineRunner {
     private final InitDB initDB;
     private final InitFormats initFormats;
-    //todo only for testing delete afterward!!!
 
     public InitMain(InitDB initDB, InitFormats initFormats) {
         this.initDB = initDB;

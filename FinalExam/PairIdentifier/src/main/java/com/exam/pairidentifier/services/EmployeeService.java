@@ -1,6 +1,8 @@
 package com.exam.pairidentifier.services;
 
+import com.exam.pairidentifier.exceptions.InputFormatException;
 import com.exam.pairidentifier.model.dto.DateRangeDTO;
+import com.exam.pairidentifier.model.dto.EmployeeDTO;
 import com.exam.pairidentifier.model.dto.EmployeeWorkHistoryDTO;
 import com.exam.pairidentifier.model.dto.PairInfoDTO;
 import com.exam.pairidentifier.repositories.EmployeeRepository;
@@ -16,60 +18,81 @@ import java.util.stream.Collectors;
 @Service
 public class EmployeeService {
 
-    private final List<PairInfoDTO> pairs = new ArrayList<>();
+    private List<PairInfoDTO> pairs;
     private final EmployeeRepository employeeRepository;
+    private final ProjectService projectService;
+    private final DateFormatService dateFormatService;
 
     @Autowired
-    public EmployeeService(EmployeeRepository employeeRepository) {
+    public EmployeeService(EmployeeRepository employeeRepository, ProjectService projectService, DateFormatService dateFormatService) {
         this.employeeRepository = employeeRepository;
+        this.projectService = projectService;
+        this.dateFormatService = dateFormatService;
     }
 
-    public void saveEmployee(Long employeeId) {
-        //todo extra => check from existing employees from prior .csv imports
+    public void saveNewEmployeeId(Long employeeId) {
         employeeRepository.save(employeeId);
     }
 
-    public List<PairInfoDTO> findMostCollaborativePair() {
-        if (pairs.isEmpty()) {
-            List<Long> allEmployeeIds = employeeRepository.getAllEmployeeIds();
+    public List<PairInfoDTO> findMostCollaborativePairFromAll() {
+        pairs = new ArrayList<>();
+        List<Long> allEmployeeIds = employeeRepository.getAllEmployeeIds();
 
-            Map<Long, EmployeeWorkHistoryDTO> allEmployeeWorkRecords = new HashMap<>();
+        Map<Long, EmployeeWorkHistoryDTO> allEmployeeWorkRecords = new HashMap<>();
 
-            for (Long employeeId : allEmployeeIds) {
+        return findPairLogic(allEmployeeIds, allEmployeeWorkRecords, pairs);
+    }
 
-                EmployeeWorkHistoryDTO workRecord = new EmployeeWorkHistoryDTO(employeeId);
-                Map<Long, List<DateRangeDTO>> employeeWorkHistory = employeeRepository.getEmployeeWorkHistory(employeeId);
-                workRecord.setHistoryInProject(employeeWorkHistory);
-                allEmployeeWorkRecords.put(employeeId, workRecord);
-            }
+    public List<PairInfoDTO> findMostCollaborativePairFromFile(Long fileId) {
+        pairs = new ArrayList<>();
+
+        List<Long> allEmployeesIdsFromFile = employeeRepository.getAllEmployeesFromFile(fileId);
+
+        Map<Long, EmployeeWorkHistoryDTO> allEmployeeWorkRecords = new HashMap<>();
+
+        return findPairLogic(allEmployeesIdsFromFile, allEmployeeWorkRecords, pairs);
+    }
 
 
-            for (int e1 = 0; e1 < allEmployeeIds.size() - 1; e1++) {
-                Long e1Id = allEmployeeIds.get(e1);
-                EmployeeWorkHistoryDTO e1WorkHistory = allEmployeeWorkRecords.get(e1Id);
+    public Set<Long> getAllEmployeesIds() {
+        List<Long> allEmployeeIds = employeeRepository.getAllEmployeeIds();
+        return new HashSet<>(allEmployeeIds);
+    }
 
-                for (Long possibleCommonProject : e1WorkHistory.getEmployeesWorkHistory().keySet()) {
+    private List<PairInfoDTO> findPairLogic(List<Long> allEmployeeIds, Map<Long, EmployeeWorkHistoryDTO> allEmployeeWorkRecords, List<PairInfoDTO> pairs) {
+        for (Long employeeId : allEmployeeIds) {
 
-                    for (int e2 = e1 + 1; e2 < allEmployeeIds.size(); e2++) {
-                        Long e2Id = allEmployeeIds.get(e2);
-                        Map<Long, List<DateRangeDTO>> e2WorkHistory = allEmployeeWorkRecords.get(e2Id).getEmployeesWorkHistory();
-                        List<DateRangeDTO> e2WorkHistoryInProject = e2WorkHistory.get(possibleCommonProject);
+            EmployeeWorkHistoryDTO workRecord = new EmployeeWorkHistoryDTO(employeeId);
+            Map<Long, List<DateRangeDTO>> employeeWorkHistory = employeeRepository.getEmployeeWorkHistory(employeeId);
+            workRecord.setHistoryInProject(employeeWorkHistory);
+            allEmployeeWorkRecords.put(employeeId, workRecord);
+        }
 
-                        if (e2WorkHistoryInProject != null) {
-                            List<DateRangeDTO> e1WorkHistoryInProject = allEmployeeWorkRecords.get(e1Id).getEmployeesWorkHistory().get(possibleCommonProject);
 
-                            e1WorkHistoryInProject.stream()
-                                    .sorted(Comparator.comparing(DateRangeDTO::getStartDate))
-                                    .collect(Collectors.toList());
+        for (int e1 = 0; e1 < allEmployeeIds.size() - 1; e1++) {
+            Long e1Id = allEmployeeIds.get(e1);
+            EmployeeWorkHistoryDTO e1WorkHistory = allEmployeeWorkRecords.get(e1Id);
 
-                            checkOverlap(e1WorkHistoryInProject, e2WorkHistoryInProject, e1Id, e2Id, possibleCommonProject);
+            for (Long possibleCommonProject : e1WorkHistory.getEmployeesWorkHistory().keySet()) {
 
-                        }
+                for (int e2 = e1 + 1; e2 < allEmployeeIds.size(); e2++) {
+                    Long e2Id = allEmployeeIds.get(e2);
+                    Map<Long, List<DateRangeDTO>> e2WorkHistory = allEmployeeWorkRecords.get(e2Id).getEmployeesWorkHistory();
+                    List<DateRangeDTO> e2WorkHistoryInProject = e2WorkHistory.get(possibleCommonProject);
+
+                    if (e2WorkHistoryInProject != null) {
+                        List<DateRangeDTO> e1WorkHistoryInProject = allEmployeeWorkRecords.get(e1Id).getEmployeesWorkHistory().get(possibleCommonProject);
+
+                        e1WorkHistoryInProject.stream()
+                                .sorted(Comparator.comparing(DateRangeDTO::getStartDate))
+                                .collect(Collectors.toList());
+
+                        checkOverlap(e1WorkHistoryInProject, e2WorkHistoryInProject, e1Id, e2Id, possibleCommonProject);
+
                     }
                 }
             }
         }
-
         return pairs;
     }
 
@@ -97,7 +120,9 @@ public class EmployeeService {
 
                 if (!latestStart.after(earliestEnd)) {
                     long diffInMillis = earliestEnd.getTime() - latestStart.getTime();
-                    long diffInDays = TimeUnit.DAYS.convert(diffInMillis, TimeUnit.MILLISECONDS);
+
+                    //I always lose the first day when subtracting
+                    long diffInDays = TimeUnit.DAYS.convert(diffInMillis, TimeUnit.MILLISECONDS) + 1;
 
                     pairInfoDTO.addAmount(diffInDays);
                     pairInfoDTO.getCommonProjects().put(e1ProjectId, diffInDays);
@@ -128,8 +153,61 @@ public class EmployeeService {
         return latestStart;
     }
 
-    public Set<Long> getAllEmployeesIds() {
-        List<Long> allEmployeeIds = employeeRepository.getAllEmployeeIds();
-        return new HashSet<>(allEmployeeIds);
+    public void saveNewEmployee(EmployeeDTO employeeDTO) throws InputFormatException {
+        if (checkIfProjectExists(employeeDTO.getProjectId())) {
+            projectService.saveProject(employeeDTO.getProjectId());
+        }
+
+        if (checkIfEmployeeExists(employeeDTO.getId())) {
+            employeeRepository.save(employeeDTO.getId());
+        }
+
+        Date startDate = checkDate(employeeDTO.getStartDate());
+        Date endDate = checkDate(employeeDTO.getEndDate());
+        employeeRepository.saveSingleEmployee(
+                employeeDTO.getId(),
+                employeeDTO.getProjectId(),
+                startDate,
+                endDate);
+    }
+
+    private Date checkDate(String startDate) throws InputFormatException {
+        return dateFormatService.parseDate(startDate);
+    }
+
+    private boolean checkIfEmployeeExists(Long id) {
+        Long count = employeeRepository.getEmployeeCountWith(id);
+        return count == 0;
+    }
+
+    private boolean checkIfProjectExists(Long projectId) {
+        Long count = projectService.getProjectCountWith(projectId);
+        return count == 0;
+    }
+
+    public EmployeeWorkHistoryDTO getEmployeeWordHistoryWithId(Long id) {
+        if (checkIfEmployeeExists(id)) {
+            throw new NoSuchElementException("Employee with this id does not exist.");
+        }
+
+        Map<Long, List<DateRangeDTO>> employeeWorkHistory = employeeRepository.getEmployeeWorkHistory(id);
+
+        EmployeeWorkHistoryDTO employeeWorkHistoryDTO = new EmployeeWorkHistoryDTO(id);
+        employeeWorkHistoryDTO.setHistoryInProject(employeeWorkHistory);
+
+        return employeeWorkHistoryDTO;
+    }
+
+    public String deleteEmployee(Long id) {
+        if (checkIfEmployeeExists(id)) {
+            throw new NoSuchElementException("Employee with this id does not exist.");
+        }
+        int affected = employeeRepository.deleteEmployee(id);
+
+        if (affected == 1) {
+            return "Deletion successful";
+        }
+
+        throw new IllegalStateException("Something went wrong. Please try again.");
     }
 }

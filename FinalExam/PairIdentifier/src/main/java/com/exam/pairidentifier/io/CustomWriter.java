@@ -7,6 +7,6 @@ import java.io.Serializable;
 import java.util.List;
 
 public interface CustomWriter {
-   void write(MultipartFile multipartFile);
+   void write(MultipartFile destination);
 
 }

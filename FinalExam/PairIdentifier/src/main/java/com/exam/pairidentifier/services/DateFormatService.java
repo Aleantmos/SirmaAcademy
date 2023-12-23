@@ -1,5 +1,6 @@
 package com.exam.pairidentifier.services;
 
+import com.exam.pairidentifier.exceptions.InputFormatException;
 import com.exam.pairidentifier.exceptions.UniquenessException;
 import com.exam.pairidentifier.repositories.DateFormatRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,24 +20,24 @@ public class DateFormatService {
         this.dateFormatRepository = dateFormatRepository;
     }
 
-    public Date parseDate(String token) {
+    public Date parseDate(String token) throws InputFormatException {
         List<String> supportedFormats = dateFormatRepository.getSupportedFormats();
 
+        Date parsed = null;
         for (String format : supportedFormats) {
             try {
                 SimpleDateFormat formatter = new SimpleDateFormat(format);
 
                 formatter.setLenient(false);
 
-                return formatter.parse(token);
+                parsed = formatter.parse(token);
+                return parsed;
             } catch (ParseException e) {
-                //todo -> continue to parse
+                //throw new InputFormatException("The date format is unfortunately unknown to us.");
             }
         }
-        //todo handle missing date formats somehow
-//        throw new UnsupportedDateFormatException("The date format is unfortunately unknown to us." +
-//                "Please add this new format or correct the data.");
-        return null;
+
+        throw new InputFormatException("The date format is unfortunately unknown to us.");
     }
 
     public long getSupportedFormatsCount() {

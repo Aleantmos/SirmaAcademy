@@ -11,8 +11,8 @@ public class Employee {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-  //  @ManyToMany(mappedBy = "employees")
-  //  private List<Project> projects;
+    @ManyToMany(mappedBy = "employees")
+    private List<Project> projects;
 
     @Column(name = "employee_id")
     private Long employeeId;
@@ -33,11 +33,11 @@ public class Employee {
         this.id = id;
     }
 
-   //public List<Project> getProjects() {
-   //    return projects;
-   //}
-   //   public void setProject(List<Project> projects) {
-   //    this.projects = projects;
-   //}
+   public List<Project> getProjects() {
+       return projects;
+   }
+      public void setProject(List<Project> projects) {
+       this.projects = projects;
+   }
 
 }

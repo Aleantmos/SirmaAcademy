@@ -16,12 +16,19 @@ public class ProjectRepository {
     }
 
     public void save(Long projectId) {
-        jdbcTemplate.update("INSERT INTO projects (id) VALUES (?)", projectId);
+        jdbcTemplate.update("insert into projects (id) values (?)", projectId);
     }
 
 
     public List<Long> getAllIds() {
         String sql = "select p.id from projects as p";
         return jdbcTemplate.queryForList(sql, Long.class);
+    }
+
+    public Long getProjectsCountWithId(Long projectId) {
+        String sql = "select count(p.id) from projects as p where p.id = (?)";
+        Long count = jdbcTemplate.queryForObject(sql, Long.class, projectId);
+
+        return count == null ? 0 : count;
     }
 }

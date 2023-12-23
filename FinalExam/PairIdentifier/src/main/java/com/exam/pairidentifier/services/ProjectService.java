@@ -26,6 +26,10 @@ public class ProjectService {
         return new HashSet<>(allIds);
     }
 
+    public Long getProjectCountWith(Long projectId) {
+        return projectRepository.getProjectsCountWithId(projectId);
+    }
+
 //    public List<EmployeeProjectPeriodDTO> getAllProjectsEmployeesWorkHistoryOrderedByEmpIdInAsc() {
 //        return projectRepository.getAllProjectsWithEmployees();
 //    }

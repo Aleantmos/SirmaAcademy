@@ -13,9 +13,6 @@ import static com.exam.pairidentifier.util.MyConstants.*;
 
 @Component
 public class InitDB {
-
-    //todo -> hide credentials
-
     public void createDatabase() {
 
         if (checkIfDatabaseExists()) {

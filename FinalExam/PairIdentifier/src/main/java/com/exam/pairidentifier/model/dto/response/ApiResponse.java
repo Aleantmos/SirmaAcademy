@@ -1,21 +1,19 @@
 package com.exam.pairidentifier.model.dto.response;
 
-import com.exam.pairidentifier.model.dto.PairInfoDTO;
+public class ApiResponse<T> {
 
-public class ApiResponse {
-
-    private PairInfoDTO bestPair;
+    private T response;
     private ApiError error;
 
     public ApiResponse() {
     }
 
-    public PairInfoDTO getBestPair() {
-        return bestPair;
+    public T getResponse() {
+        return response;
     }
 
-    public void setBestPair(PairInfoDTO bestPair) {
-        this.bestPair = bestPair;
+    public void setResponse(T response) {
+        this.response = response;
     }
 
     public ApiError getError() {

@@ -16,8 +16,10 @@ public class IOUtils {
     }
 
     public static BufferedReader getBufferedInputStreamReader(InputStream inputStream) {
-        return new BufferedReader(new InputStreamReader(inputStream));
-
+        if (bufferedReader == null) {
+            return new BufferedReader(new InputStreamReader(inputStream));
+        }
+        return bufferedReader;
     }
 
 

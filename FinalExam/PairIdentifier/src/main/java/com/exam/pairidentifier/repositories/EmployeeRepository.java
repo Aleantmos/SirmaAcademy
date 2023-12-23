@@ -57,4 +57,34 @@ public class EmployeeRepository {
             }
         };
     }
+
+    public void getEmployeeWithId(Long id) {
+    }
+
+    public List<Long> getAllEmployeesFromFile(Long fileId) {
+        String sql = "select ep.employee_id from employee_project  as ep where ep.file_id = (?)";
+        return jdbcTemplate.queryForList(sql, Long.class,fileId);
+    }
+
+    public void saveSingleEmployee(Long id, Long projectId, Date startDate, Date endDate) {
+        String sql = "insert into employee_project (employee_id, project_id, start_date, end_date) " +
+                "values(?, ?, ?, ?)";
+
+        jdbcTemplate.update(sql, id, projectId, startDate, endDate);
+    }
+
+    public Long getEmployeeCountWith(Long id) {
+        String sql = "select count(e.id) from employees as e where e.id = (?)";
+        return jdbcTemplate.queryForObject(sql, Long.class, id);
+    }
+
+    public int deleteEmployee(Long id) {
+        String mappingSqlDeletion = "delete from employee_project WHERE employee_id = (?)";
+        jdbcTemplate.update(mappingSqlDeletion, id);
+
+        String employeeSqlDeletion = "DELETE FROM employees WHERE id = (?)";
+        int affectedInEmployeeTable = jdbcTemplate.update(employeeSqlDeletion, id);
+
+        return affectedInEmployeeTable;
+    }
 }
